@@ -43,15 +43,32 @@ async function run() {
             res.send(result);
         })
 
-        // Update a user from the database collection
-        app.get("/users/:id", async(req, res) => {
+        // find a single user from the database collection
+        app.get("/users/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await usersCollection.findOne(query);
             res.send(result);
         })
+        // update user to database collection
+        app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const user = req.body;
+            console.log(user);
+
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateUser = {
+                $set: {
+                    name: user.name,
+                    email: user.email
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateUser, options);
+            res.send(result);
+        })
         // Delete a user from the database collection
-        app.delete("/users/:id", async(req, res) => {
+        app.delete("/users/:id", async (req, res) => {
             const id = req.params.id;
             console.log(id);
             const query = { _id: new ObjectId(id) };
